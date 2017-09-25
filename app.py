@@ -11,7 +11,7 @@ app = dash.Dash(__name__, server=server)
 df = pd.read_csv('com_20_all_all.csv')
 df2 = pd.read_csv('com_20_all_all_para.csv')
 
-def plot_parameter(characteristic):
+def plot_parameter(characteristic, ptitle):
     return {
         'data': [
             go.Scatter(
@@ -33,7 +33,7 @@ def plot_parameter(characteristic):
     ],
     'layout': go.Layout(
         xaxis={'title': 'Community'},
-        yaxis={'title': characteristic},
+        yaxis={'title': ptitle},
         # margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
         # legend={'x': 0, 'y': 1},
         hovermode='closest'
@@ -51,7 +51,8 @@ app.layout = html.Div([
             ], className='navbar-header'),
             html.Ul([
                 html.Li([dcc.Link('Communities', href='/')]),
-                html.Li([dcc.Link('Modeling', href='/about')])
+                html.Li([dcc.Link('Modeling', href='/about')]),
+                html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
     ], className='navbar navbar-dark navbar-inverse'),
@@ -73,7 +74,7 @@ index_layout = html.Div([
                 )],
                 style={'margin': '0 50px 50px 50px'}
             ),
-            html.P('Hover over map to see details on the communities present at each location', className='col-md-12'),
+            html.P('Hover over map to see details on the communities present at each location'),
             dcc.Graph(id='map', animate=True)
             ],className='col-md-7'
         ),
@@ -83,54 +84,53 @@ index_layout = html.Div([
             ], className='col-md-5'
         )
     ], className='row'),
-    html.Div([
-        html.P('Weighted mean and std of each community with the listed parameters', className='col-md-12', style={'margin': '50px'}),
-        html.Div([
-            dcc.Graph(
-                id='longitude-plot',
-                figure=plot_parameter('Longitude')
-            )
-        ], className='col-md-6'),
-        html.Div([
-            dcc.Graph(
-                id='latitude-plot',
-                figure=plot_parameter('Latitude')
-            )
-        ], className='col-md-6')
-    ], className='row'),
-    html.Div([
-        html.Div([
-            dcc.Graph(
-                id='elevation-plot',
-                figure=plot_parameter('Elevation')
-            )
-        ], className='col-md-6'),
-        html.Div([
-            dcc.Graph(
-                id='precipitation-plot',
-                figure=plot_parameter('MeanAnnualPrecipitation')
-            )
-        ], className='col-md-6')
-    ], className='row'),
-    html.Div([
-        html.Div([
-            dcc.Graph(
-                id='temperature-plot',
-                figure=plot_parameter('MeanAnnual Temperature')
-            )
-        ], className='col-md-6'),
-        # html.Div([
-        #     dcc.Graph(
-        #         id='precipitation-plot',
-        #         figure=plot_parameter('MeanAnnualPrecipitation')
-        #     )
-        # ], className='col-md-6')
-    ], className='row')
     # html.Div(id='text-content')
 ], className='container-fluid')
 
 about_layout = html.Div([
-    html.P('this text is a test')
+    html.Div([
+        html.Div([
+            html.Div([
+                html.Div([
+                    html.H3('Choose a community to examine:'),
+                    dcc.Slider(
+                        id='community-slider',
+                        min=0,
+                        max=19,
+                        value=0,
+                        step=None,
+                        marks={str(i): str(i+1) for i in range(20)}
+                    )],
+                    style={'margin': '0 50px 50px 50px'}
+                ),
+                html.P('Hover over map to see details on the communities present at each location'),
+                dcc.Graph(id='map', animate=True)
+                ], className='affix')
+            ], className='col-md-7'
+        ),
+        html.Div([
+            dcc.Graph(
+                id='longitude-plot',
+                figure=plot_parameter('Longitude', 'Community Longitude')
+                ),
+            dcc.Graph(
+                id='latitude-plot',
+                figure=plot_parameter('Latitude', 'Community Latitude')
+                ),
+            dcc.Graph(
+                id='elevation-plot',
+                figure=plot_parameter('Elevation', 'Community Elevation (m)')
+                ),
+            dcc.Graph(
+                id='precipitation-plot',
+                figure=plot_parameter('MeanAnnualPrecipitation', 'Community Precipitation (cm)')
+                ),
+            dcc.Graph(
+                id='temperature-plot',
+                figure=plot_parameter('MeanAnnual Temperature', 'Community Temperature (C)')
+                )
+        ], className='col-md-5'),
+    ], className='row')
 ], className='container-fluid')
 
 
