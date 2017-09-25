@@ -34,7 +34,7 @@ def plot_parameter(characteristic, ptitle):
     'layout': go.Layout(
         xaxis={'title': 'Community'},
         yaxis={'title': ptitle},
-        # margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+        margin={'l': 40, 'b': 50, 't': 50, 'r': 50},
         # legend={'x': 0, 'y': 1},
         hovermode='closest'
         )
@@ -50,8 +50,9 @@ app.layout = html.Div([
                 dcc.Link('Bacterial Communities', href='/', className='navbar-brand'),
             ], className='navbar-header'),
             html.Ul([
-                html.Li([dcc.Link('Communities', href='/')]),
-                html.Li([dcc.Link('Modeling', href='/about')]),
+                html.Li([dcc.Link('Location Explorer', href='/')]),
+                html.Li([dcc.Link('Community Properties', href='/about')]),
+                html.Li([dcc.Link('Model', href='/model')]),
                 html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
@@ -103,8 +104,7 @@ about_layout = html.Div([
                     )],
                     style={'margin': '0 50px 50px 50px'}
                 ),
-                html.P('Hover over map to see details on the communities present at each location'),
-                dcc.Graph(id='map', animate=True)
+                dcc.Graph(id='map', animate=True, style={'margin': '0 -250px 0 0'})
                 ], className='affix')
             ], className='col-md-7'
         ),
@@ -130,6 +130,12 @@ about_layout = html.Div([
                 figure=plot_parameter('MeanAnnual Temperature', 'Community Temperature (C)')
                 )
         ], className='col-md-5'),
+    ], className='row')
+], className='container-fluid')
+
+model_layout = html.Div([
+    html.Div([
+        html.P('Hi')
     ], className='row')
 ], className='container-fluid')
 
@@ -290,6 +296,8 @@ def update_plot(hoverData):
     dash.dependencies.Output('page-content', 'children'),
     [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
+    if pathname == '/model':
+        return model_layout
     if pathname == '/about':
         return about_layout
     else:
