@@ -187,7 +187,6 @@ taxa_layout = html.Div([
     ], className='row'),
     html.Div([
         html.Div([
-            html.P('Hover over map to see details on the communities present at each location'),
             dcc.Graph(id='map', animate=True)
             ],className='col-md-7'
         ),
