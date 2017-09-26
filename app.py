@@ -47,12 +47,12 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Div([
-                dcc.Link('Bacterial Communities', href='/', className='navbar-brand'),
+                dcc.Link('Bacterial States of America', href='/', className='navbar-brand'),
             ], className='navbar-header'),
             html.Ul([
                 html.Li([dcc.Link('Location Explorer', href='/')]),
                 html.Li([dcc.Link('Community Properties', href='/about')]),
-                html.Li([dcc.Link('Model', href='/model')]),
+                html.Li([dcc.Link('Model Explanation', href='/model')]),
                 html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
@@ -135,8 +135,44 @@ about_layout = html.Div([
 
 model_layout = html.Div([
     html.Div([
-        html.P('Hi')
-    ], className='row')
+        html.Div([
+            html.H3('Identifying Bacterial Communities:'),
+            html.H5('''Summary: This project is a proof of concept using machine learning to
+            identify bacterial communities for market segmentation in the probiotic space.
+            '''),
+            html.H5('Bacteria are everywhere, and we are only just learning how to harness them'),
+            html.P('''
+                There are more bacterial cells in a human body than human cells. Bacteria shape the world around them. They can be thought of as contract workers for larger organisms. Performing chemistry that animals and plants are unable to do for themselves. Sometimes that chemistry is to break down molecules, other times it helps defend against harmful bacteria. Up until recently, most bacterial species were a mystery to biologist. Only bacteria that could be grown in a lab could be studied or even identified and this is only possible for a small subset of all bacterial species. With the advances in DNA sequencing technology it is now possibly to detect DNA from all the bacteria present in a given sample, but sometimes all we know about a given bacteria is that its DNA is different from any other bacteria that has be previously observed.
+            '''),
+            html.H5('''
+                What are probiotics? Probiotics take the concept that some bacteria are beneficial for human, animal or plant health and package those benefits as a commercial product.
+            '''),
+            html.H5('Motivation is to define bacterial subpopulations to be targeted with probiotics'),
+            html.P('''
+                Current probiotics products use a one-size-fits-all approach. But there is an increasing information about how bacteria interact with each other, the is the opportunity to target different probiotics to people with different bacterial populations. This is especially true in the area of plant probiotics, where the beneficial bacteria not only need to be optimized for the plants, but also for the bacteria that live in the surrounding soil. Market segmentation is also particularly important in this field because the number of possible bacteria species stretches into the millions. Market segments would ideally be communities of positively interacting bacteria. We can assume that if bacteria have positive interactions they are more likely to occur together.
+            '''),
+            html.H5('Dataset is counts of bacteria at locations across the US'),
+            html.P('''
+                Data for this analysis is from dust samples collected from across the US as part of the “Wild life of our homes” citizen science project. The data consists of ~1500 locations and the associated number of sequence counts for ~130,000 bacterial species (OTUs). As with most data of this type, the data is only 3% dense, meaning that most species are not observed at most locations. This is important for determining the appropriate clustering mechanism.
+            '''),
+            html.H5('Approach is to use Latent Dirichlet Allocation to identify bacterial subpopulations'),
+            html.P('''
+                For this project, I chose to use Latent Dirichlet Allocation (LDA) to define bacterial communities. When thinking about the data, we assume that when each location is sampled (i.e. a doorway is swabbed) we are picking up bacteria from multiple neighboring communities. Additionally, multiple communities might contain the same bacterial species. The LDA model fits with these assumptions. In brief, LDA is a generative probabilistic model in which each sampled location is a random mixture over the latent communities defined by the model and each community is defined by a distribution over bacterial species.
+            '''),
+            html.H5('Perplexity to evaluate LDA models and estimate 20 communities across the US'),
+            html.P('''
+                Validation: The classic way to validate an LDA model is by evaluating the perplexity of the model. Perplexity is a measure of the likelihood of producing the observations in test dataset, assuming that the distributions defined by your model are true. Specifically, it can be calculated as the inverse geometric mean of the per-word likelihood. The smaller the perplexity the more accurately your model predicts the observed data. I used the perplexity score to define the minimal number of communities to required to described the bacterial diversity observed in my dataset to be approximately 20 communities. (See slide show for graph).
+            '''),
+            html.H5('''
+                Additional metrics:
+                Taxa: In addition to calculating the perplexity on a held-out test dataset, I examined the bacterial species present in each community. I found that some communities were defined completely by unknown bacterial species. In other communities though, the top weighted bacteria shared taxonomic labels. Explore more in the Taxa tab.
+            '''),
+            html.H5('''Locations: Using a separate dataset containing latitude and longitude data for each location, I visualized the distribution of each community across the US. Explore in the Locations tab
+            '''),
+            html.H5('''Climate data: I also determined the mutual information as well as a weighted mean and standard deviation metric for the elevation, mean annual precipitation and mean annual temperature associated with each location. Interestingly, none of the communities are strongly defined by these location parameters. Explore further in the Climate tab.
+            ''')
+        ], className='col-md-8')
+    ], className='row', style={'margin': '0 50px 50px 50px'})
 ], className='container-fluid')
 
 
