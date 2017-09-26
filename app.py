@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import flask
+import pickle
 import pandas as pd
 
 server = flask.Flask(__name__)
@@ -10,6 +11,9 @@ app = dash.Dash(__name__, server=server)
 
 df = pd.read_csv('com_20_all_all.csv')
 df2 = pd.read_csv('com_20_all_all_para.csv')
+with open('bac_20_top5taxa.pkl', 'rb') as f:
+    taxa = pickle.load(f)
+
 
 model_explanation='''
 ## Identifying Bacterial Communities
@@ -31,7 +35,7 @@ Data for this analysis is from dust samples collected from across the US as part
 For this project, I chose to use latent Dirichlet allocation (LDA) to define bacterial communities. We assume that when each location is sampled (e.g., a doorway is swabbed) we are picking up bacteria from multiple coexisting bacterial communities. Additionally, multiple bacterial communities might contain the same species. The LDA model fits with these assumptions. In brief, LDA is a generative probabilistic model in which each sampled location is a random mixture over the latent communities defined by the model and each community is defined by a distribution over bacterial species.
 
 ### We can identify 20 bacterial communities across the US
-The classic way to validate an LDA model is by evaluating the perplexity of the model. The perplexity is a measure of the likelihood of producing the observations in a test dataset assuming that the distributions defined by the model are true. Specifically, it can be calculated as the inverse geometric mean of the per-word likelihood. The smaller the perplexity, the more accurately the model predicts the observed data. I used the perplexity score to define the minimal number of communities required to describe the bacterial diversity in my dataset; the minimum is approximately 20 communities. (See slide show for graph).
+The classic way to validate an LDA model is by evaluating the perplexity of the model. The perplexity is a measure of the likelihood of producing the observations in a test dataset assuming that the distributions defined by the model are true. Specifically, it can be calculated as the inverse geometric mean of the per-species likelihood. The smaller the perplexity, the more accurately the model predicts the observed data. I used the perplexity score to define the minimal number of communities required to describe the bacterial diversity in my dataset; the minimum is approximately 20 communities. (See slide show for graph).
 
 ### The bacterial communities are easily visualized
 #### Taxa
@@ -67,7 +71,7 @@ def plot_parameter(characteristic, ptitle):
     'layout': go.Layout(
         xaxis={'title': 'Community'},
         yaxis={'title': ptitle},
-        margin={'l': 40, 'b': 50, 't': 50, 'r': 50},
+        margin={'l': 50, 'b': 50, 't': 50, 'r': 50},
         # legend={'x': 0, 'y': 1},
         hovermode='closest'
         )
@@ -85,7 +89,8 @@ app.layout = html.Div([
             html.Ul([
                 html.Li([dcc.Link('Location Explorer', href='/')]),
                 html.Li([dcc.Link('Community Properties', href='/about')]),
-                html.Li([dcc.Link('Model Explanation', href='/model')]),
+                html.Li([dcc.Link('Taxa Explorer', href='/taxa')]),
+                html.Li([dcc.Link('Projet Explanation', href='/model')]),
                 html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
@@ -97,7 +102,7 @@ index_layout = html.Div([
     html.Div([
         html.Div([
             html.Div([
-                html.H3('Choose a community to examine:'),
+                html.H3('Choose a bacterial community to examine:'),
                 dcc.Slider(
                     id='community-slider',
                     min=0,
@@ -126,7 +131,7 @@ about_layout = html.Div([
         html.Div([
             html.Div([
                 html.Div([
-                    html.H3('Choose a community to examine:'),
+                    html.H3('Choose a bacterial community to examine:'),
                     dcc.Slider(
                         id='community-slider',
                         min=0,
@@ -140,28 +145,58 @@ about_layout = html.Div([
             ], className='col-md-7', style={'position': 'fixed'})
         ]),
         html.Div([
+            html.H2('Geoclimate factors associated with each community'),
             dcc.Graph(
                 id='longitude-plot',
-                figure=plot_parameter('Longitude', 'Community Longitude')
+                figure=plot_parameter('Longitude', 'Mean community longitude')
                 ),
             dcc.Graph(
                 id='latitude-plot',
-                figure=plot_parameter('Latitude', 'Community Latitude')
+                figure=plot_parameter('Latitude', 'Mean community latitude')
                 ),
             dcc.Graph(
                 id='elevation-plot',
-                figure=plot_parameter('Elevation', 'Community Elevation (m)')
+                figure=plot_parameter('Elevation', 'Mean community elevation (m)')
                 ),
             dcc.Graph(
                 id='precipitation-plot',
-                figure=plot_parameter('MeanAnnualPrecipitation', 'Community Precipitation (cm)')
+                figure=plot_parameter('MeanAnnualPrecipitation', 'Mean community precipitation (cm)')
                 ),
             dcc.Graph(
                 id='temperature-plot',
-                figure=plot_parameter('MeanAnnual Temperature', 'Community Temperature (C)')
+                figure=plot_parameter('MeanAnnual Temperature', 'Mean community temperature (C)')
                 )
         ], className='col-md-5', style={'float': 'right'}),
     ], className='row')
+], className='container-fluid')
+
+taxa_layout = html.Div([
+    html.Div([
+        html.Div([
+            html.H3('Choose a bacterial community to examine:'),
+            dcc.Slider(
+                id='community-slider',
+                min=0,
+                max=19,
+                value=0,
+                step=None,
+                marks={str(i): str(i+1) for i in range(20)}
+            )],
+            style={'margin': '0 50px 50px 50px'}
+        )
+    ], className='row'),
+    html.Div([
+        html.Div([
+            html.P('Hover over map to see details on the communities present at each location'),
+            dcc.Graph(id='map', animate=True)
+            ],className='col-md-7'
+        ),
+        html.Div(children=[
+            html.H4(children='Top weighted species'),
+            html.Table(id='top-species-table', style={'border': '1px solid black', 'padding': '15px'})
+            ], className='col-md-5')
+    ], className='row'),
+    # html.Div(id='text-content')
 ], className='container-fluid')
 
 model_layout = html.Div([
@@ -189,14 +224,28 @@ def update_text(hoverData):
     )
 
 @app.callback(
+    dash.dependencies.Output('top-species-table', 'children'),
+    [dash.dependencies.Input('community-slider', 'value')])
+def generate_table(community):
+    return html.Table(
+        # Header
+        [html.Tr([html.Th('Taxa of top weighted species', style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'}), html.Th('Species weight', style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'})])] +
+
+        # Body
+        [html.Tr([
+            html.Td(taxa[community].index[i], style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px', 'border-collapse': 'collapse'}),
+            html.Td(taxa[community].values[i].round(2))], style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'}) for i in range(len(taxa[community]))]
+    )
+
+@app.callback(
     dash.dependencies.Output('location-values', 'figure'),
     [dash.dependencies.Input('map', 'hoverData')])
 def location_values(hoverData):
     s = df[df['ID'] == hoverData['points'][0]['customdata']]
     scales = ['<b>Precipitation</b>', '<b>Temperature</b>', '<b>Elevation</b>']
-    max_P = 200
-    max_T = 20
-    max_E = 2000
+    max_P = df['MeanAnnualPrecipitation'].max().round(-1) + 10
+    max_T = df['MeanAnnual Temperature'].max().round(-1) + 10
+    max_E = df['Elevation'].max().round(-2) + 100
     max_values = [max_P, max_T, max_E]
 
     # Add Scale Titles to the Plot
@@ -212,7 +261,6 @@ def location_values(hoverData):
             xaxis='x'+str(i+1),
             yaxis='y'+str(i+1)
         ))
-
     # Create Scales
     ## Since we have 7 lables, the scale will range from 0-6
     shapes = []
@@ -284,7 +332,7 @@ def update_map(community):
         'layout': {
             'mapbox': {
                 'accesstoken': 'pk.eyJ1IjoibmhlZXIxMiIsImEiOiJjajdueWN0M2Mxb3F3MnFvNmJ0bHoyb3NuIn0.9hzvd8-dM_WSARnKjjOZ8A',
-                'center': {'lat': 39.83, 'lon': -98.58},
+                'center': {'lat': 39.83, 'lon': -95.58},
                 'zoom': 3,
                 'style': 'mapbox://styles/nheer12/cj7nzag5y71bh2rl08ksp1jbk'
             },
@@ -333,6 +381,8 @@ def display_page(pathname):
         return model_layout
     if pathname == '/about':
         return about_layout
+    if pathname == '/taxa':
+        return taxa_layout
     else:
         return index_layout
 
