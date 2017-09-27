@@ -118,12 +118,11 @@ index_layout = html.Div([
             ],className='col-md-7'
         ),
         html.Div([
-            dcc.Graph(id='location-values'),
+            dcc.Graph(id='location-values', style={'margin': '50px 0 0 0'}),
             dcc.Graph(id='communities-dist')
             ], className='col-md-5'
         )
     ], className='row'),
-    # html.Div(id='text-content')
 ], className='container-fluid')
 
 about_layout = html.Div([
@@ -191,11 +190,9 @@ taxa_layout = html.Div([
             ],className='col-md-7'
         ),
         html.Div(children=[
-            html.H4(children='Top weighted species'),
-            html.Table(id='top-species-table', style={'border': '1px solid black', 'padding': '15px'})
+            html.Div(id='top-species-table')
             ], className='col-md-5')
     ], className='row'),
-    # html.Div(id='text-content')
 ], className='container-fluid')
 
 model_layout = html.Div([
@@ -208,33 +205,22 @@ model_layout = html.Div([
 
 
 @app.callback(
-    dash.dependencies.Output('text-content', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
-def update_text(hoverData):
-    s = df[df['ID'] == hoverData['points'][0]['customdata']]
-    return html.P(
-        'In {}, {}, the mean precipitation is {} cm, the mean temperature is {} C and the elevation is {} m'.format(
-            s.iloc[0]['City'].title().strip(),
-            s.iloc[0]['State'],
-            s.iloc[0]['MeanAnnualPrecipitation'],
-            s.iloc[0]['MeanAnnual Temperature'],
-            s.iloc[0]['Elevation']
-        )
-    )
-
-@app.callback(
     dash.dependencies.Output('top-species-table', 'children'),
     [dash.dependencies.Input('community-slider', 'value')])
 def generate_table(community):
-    return html.Table(
-        # Header
-        [html.Tr([html.Th('Taxa of top weighted species', style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'}), html.Th('Species weight', style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'})])] +
-
-        # Body
-        [html.Tr([
-            html.Td(taxa[community].index[i], style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px', 'border-collapse': 'collapse'}),
-            html.Td(taxa[community].values[i].round(2))], style={'border': '1px solid #dddddd', 'padding': '10px', 'border-spacing': '5px'}) for i in range(len(taxa[community]))]
-    )
+    return html.Table([
+        html.Thead([html.Tr([
+            html.Th('Taxa of top weighted species'),
+            html.Th('Species weight')
+            ])]),
+        html.Tbody([
+            html.Tr([
+                html.Td(taxa[community].index[i]),
+                html.Td(taxa[community].values[i].round(2))
+            ])
+            for i in range(len(taxa[community]))
+        ])
+        ], className = 'table')
 
 @app.callback(
     dash.dependencies.Output('location-values', 'figure'),
@@ -300,6 +286,9 @@ def location_values(hoverData):
 
     # Put all elements of the layout together
     layout = {'shapes': shapes,
+              'title': 'The distribution of communities in {}, {}'.format(
+                s.iloc[0]['City'].title().strip(),
+                s.iloc[0]['State']),
               'xaxis1': xaxes[0],
               'xaxis2': xaxes[1],
               'xaxis3': xaxes[2],
