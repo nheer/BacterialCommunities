@@ -87,10 +87,10 @@ app.layout = html.Div([
                 dcc.Link('Bacterial States of America', href='/', className='navbar-brand'),
             ], className='navbar-header'),
             html.Ul([
+                html.Li([dcc.Link('Project Explanation', href='/model')]),
                 html.Li([dcc.Link('Location Explorer', href='/')]),
                 html.Li([dcc.Link('Community Properties', href='/about')]),
                 html.Li([dcc.Link('Taxa Explorer', href='/taxa')]),
-                html.Li([dcc.Link('Projet Explanation', href='/model')]),
                 html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
