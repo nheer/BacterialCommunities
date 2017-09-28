@@ -29,7 +29,7 @@ Probiotics apply the notion that some bacteria are beneficial for human, animal 
 Current probiotics products use a one-size-fits-all approach. But there is increasing information about how bacteria interact with each other, giving us the opportunity to target different probiotics to people and places with different bacterial populations. This is especially true for plant probiotics, where the beneficial bacteria need to be optimized not only for the plants themselves, but also for the bacteria that live in the surrounding soil. Practical market segmentation is particularly important in this field because the number of possible bacteria species stretches into the millions. Market segments would ideally be communities of positively interacting bacteria. We can assume that if bacteria have positive interactions they are more likely to occur together.
 
 ### We have data on the presence of bateria at locations across the US
-Data for this analysis is from dust samples collected from across the US as part of the "Wild life of our homes" citizen science project. Participants from over 1000 locations collected dust samples, and over 130,000 bacterial species (OTUs) were identified. As with most data of this type, the data is only 3% dense, meaning that most species are not observed at most locations. This is important for determining the appropriate clustering mechanism.
+Data for this analysis is from dust samples collected from across the US as part of the "Wild life of our homes" citizen science project and published [here](/pnas.org/content/112/18/5756.full). Participants from over 1000 locations collected dust samples, and over 130,000 bacterial species (OTUs) were identified. As with most data of this type, the data is only 3% dense, meaning that most species are not observed at most locations. This is important for determining the appropriate clustering mechanism.
 
 ### Latent Dirichlet allocation can identify bacterial subpopulations
 For this project, I chose to use latent Dirichlet allocation (LDA) to define bacterial communities. We assume that when each location is sampled (e.g., a doorway is swabbed) we are picking up bacteria from multiple coexisting bacterial communities. Additionally, multiple bacterial communities might contain the same species. The LDA model fits with these assumptions. In brief, LDA is a generative probabilistic model in which each sampled location is a random mixture over the latent communities defined by the model and each community is defined by a distribution over bacterial species.
@@ -118,7 +118,7 @@ index_layout = html.Div([
             ],className='col-md-7'
         ),
         html.Div([
-            dcc.Graph(id='location-values', style={'margin': '50px 0 0 0'}),
+            dcc.Graph(id='location-values', style={'margin': '0 0 0 0'}),
             dcc.Graph(id='communities-dist')
             ], className='col-md-5'
         )
@@ -286,7 +286,7 @@ def location_values(hoverData):
 
     # Put all elements of the layout together
     layout = {'shapes': shapes,
-              'title': 'The distribution of communities in {}, {}'.format(
+              'title': 'Climate data in {}, {}'.format(
                 s.iloc[0]['City'].title().strip(),
                 s.iloc[0]['State']),
               'xaxis1': xaxes[0],
@@ -296,7 +296,7 @@ def location_values(hoverData):
               'yaxis2': yaxes[1],
               'yaxis3': yaxes[2],
               'autosize': True,
-              'margin': go.Margin(l=50, r=50, b=50, t=0),
+              'margin': go.Margin(l=50, r=50, b=50, t=30),
               'height': 200
     }
     return {'data': traces, 'layout': layout}
