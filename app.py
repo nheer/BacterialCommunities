@@ -1,10 +1,12 @@
+import pickle
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
 import flask
-import pickle
 import pandas as pd
+import plotly.graph_objs as go
+
 
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
@@ -38,23 +40,25 @@ Probiotics apply the notion that some bacteria are beneficial for human, animal
 or plant health and package those benefits as a commercial product.
 
 ### Bacterial subpopulations can be targeted with probiotics
-Current probiotics products use a one-size-fits-all approach. But there is
-increasing information about how bacteria interact with each other, giving us
-the opportunity to target different probiotics to people and places with different
-bacterial populations. This is especially true for plant probiotics, where the
-beneficial bacteria need to be optimized not only for the plants themselves, but
-also for the bacteria that live in the surrounding soil. Practical market
-segmentation is particularly important in this field because the number of
-possible bacteria species stretches into the millions. Market segments would
-ideally be communities of positively interacting bacteria. We can assume that if
-bacteria have positive interactions they are more likely to occur together.
+Current probiotics products use a one-size-fits-all approach. But it is possible
+that the effectiveness of those products depends on the bacteria already present
+in the environment. There is increasing information about how bacteria interact
+with each other, giving us the opportunity to target different probiotics to
+people and places with different bacterial populations. This is especially true
+for plant probiotics, where the beneficial bacteria might need to be optimized
+not only for the plants themselves, but also for the bacteria that live in the
+surrounding soil. Practical market segmentation is particularly important in this
+field because the number of possible bacteria species stretches into the millions.
+Market segments would ideally be communities of positively interacting bacteria.
+We can assume that if bacteria have positive interactions they are more likely
+to occur together.
 
 ### We have data on the presence of bateria at locations across the US
 Data for this analysis is from dust samples collected from across the US as part
 of the "Wild life of our homes" citizen science project and published
 [here](/pnas.org/content/112/18/5756.full). Participants from over 1000 locations
 collected dust samples, and over 130,000 bacterial species (OTUs) were identified.
-As with most data of this type, the data is only 3% dense, meaning that most
+As with most data of this type, the data is only 3\% dense, meaning that most
 species are not observed at most locations. This is important for determining
 the appropriate clustering mechanism.
 
@@ -102,30 +106,28 @@ Climate tab.
 def plot_parameter(characteristic, ptitle):
     '''Plot community weighted mean and std of elevation, precipitation and temperature'''
     return {
-        'data': [
-            go.Scatter(
-                x=list(range(1,21)),
-                y=df_com_geoclim[characteristic+' Mean'],
-                error_y={
-                    'type': 'data',
-                    'array': df_com_geoclim[characteristic+' Std'],
-                    'visible': True
-                },
-                mode='markers',
-                opacity=0.7,
-                marker={
-                    'size': 15,
-                    'line': {'width': 0.5, 'color': 'white'}
-                },
-                name='Name'
-            )
-    ],
-    'layout': go.Layout(
-        xaxis={'title': 'Community'},
-        yaxis={'title': ptitle},
-        margin={'l': 50, 'b': 50, 't': 50, 'r': 50},
-        # legend={'x': 0, 'y': 1},
-        hovermode='closest'
+        'data': [go.Scatter(
+            x=list(range(1,21)),
+            y=df_com_geoclim[characteristic+' Mean'],
+            error_y={
+                'type': 'data',
+                'array': df_com_geoclim[characteristic+' Std'],
+                'visible': True
+            },
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name='Name'
+        )],
+        'layout': go.Layout(
+            xaxis={'title': 'Community'},
+            yaxis={'title': ptitle},
+            margin={'l': 50, 'b': 50, 't': 50, 'r': 50},
+            # legend={'x': 0, 'y': 1},
+            hovermode='closest'
         )
     }
 
@@ -164,18 +166,15 @@ index_layout = html.Div([
                     value=0,
                     step=None,
                     marks={str(i): str(i+1) for i in range(20)}
-                )],
-                style={'margin': '0 50px 50px 50px'}
-            ),
+                )
+            ], style={'margin': '0 50px 50px 50px'}),
             html.P('Hover over map to see details on the communities present at each location'),
             dcc.Graph(id='map', animate=True)
-            ],className='col-md-7'
-        ),
+        ],className='col-md-7'),
         html.Div([
             dcc.Graph(id='location-values', style={'margin': '0 0 0 0'}),
             dcc.Graph(id='communities-dist')
-            ], className='col-md-5'
-        )
+        ], className='col-md-5')
     ], className='row'),
 ], className='container-fluid')
 
@@ -203,23 +202,23 @@ geoclimate_layout = html.Div([
             dcc.Graph(
                 id='longitude-plot',
                 figure=plot_parameter('Longitude', 'Mean community longitude')
-                ),
+            ),
             dcc.Graph(
                 id='latitude-plot',
                 figure=plot_parameter('Latitude', 'Mean community latitude')
-                ),
+            ),
             dcc.Graph(
                 id='elevation-plot',
                 figure=plot_parameter('Elevation', 'Mean community elevation (m)')
-                ),
+            ),
             dcc.Graph(
                 id='precipitation-plot',
                 figure=plot_parameter('MeanAnnualPrecipitation', 'Mean community precipitation (cm)')
-                ),
+            ),
             dcc.Graph(
                 id='temperature-plot',
                 figure=plot_parameter('MeanAnnual Temperature', 'Mean community temperature (C)')
-                )
+            )
         ], className='col-md-5', style={'float': 'right'}),
     ], className='row')
 ], className='container-fluid')
@@ -236,30 +235,21 @@ taxa_layout = html.Div([
                 value=0,
                 step=None,
                 marks={str(i): str(i+1) for i in range(20)}
-            )],
-            style={'margin': '0 50px 50px 50px'}
-        )
+            )
+        ], style={'margin': '0 50px 50px 50px'})
     ], className='row'),
     html.Div([
-        html.Div([
-            dcc.Graph(id='map', animate=True)
-            ],className='col-md-7'
-        ),
-        html.Div(children=[
-            html.Div(id='top-species-table')
-            ], className='col-md-5')
+        html.Div([dcc.Graph(id='map', animate=True)], className='col-md-7'),
+        html.Div([html.Div(id='top-species-table')], className='col-md-5')
     ], className='row'),
 ], className='container-fluid')
 
 #: Layout project explanation page.
 explanation_layout = html.Div([
     html.Div([
-        html.Div([
-            dcc.Markdown(children=model_explanation)
-        ], className='col-md-8')
+        html.Div([dcc.Markdown(model_explanation)], className='col-md-8')
     ], className='row', style={'margin': '0 50px 50px 50px'})
 ], className='container-fluid')
-
 
 @app.callback(
     dash.dependencies.Output('top-species-table', 'children'),
@@ -269,7 +259,7 @@ def generate_table(community):
         html.Thead([html.Tr([
             html.Th('Taxa of top weighted species'),
             html.Th('Species weight')
-            ])]),
+        ])]),
         html.Tbody([
             html.Tr([
                 html.Td(taxa[community].index[i]),
@@ -277,14 +267,14 @@ def generate_table(community):
             ])
             for i in range(len(taxa[community]))
         ])
-        ], className = 'table')
+    ], className = 'table')
 
 @app.callback(
     dash.dependencies.Output('location-values', 'figure'),
     [dash.dependencies.Input('map', 'hoverData')])
 def location_values(hoverData):
     '''Make linear range plots of elevation, temperature, precipitation'''
-    s = df_loc_com[df_loc_com['ID'] == hoverData['points'][0]['customdata']]
+    local_data = df_loc_com[df_loc_com['ID'] == hoverData['points'][0]['customdata']]
     scales = ['<b>Precipitation</b>', '<b>Temperature</b>', '<b>Elevation</b>']
     max_P = df_loc_com['MeanAnnualPrecipitation'].max().round(-1) + 10
     max_T = df_loc_com['MeanAnnual Temperature'].max().round(-1) + 10
@@ -306,13 +296,10 @@ def location_values(hoverData):
 
     shapes = []
     for i in range(len(scales)):
-        shapes.append({'type': 'line',
-                       'x0': 0, 'x1': 1,
-                       'y0': 0, 'y1': 0,
+        shapes.append({'type': 'line', 'x0': 0, 'x1': 1, 'y0': 0, 'y1': 0,
                        'xref':'x'+str(i+1), 'yref':'y'+str(i+1)})
 
     y_domains = [[0, .33], [.33, .67], [.67, 1]]
-
     yaxes = []
     for i in range(len(scales)):
         yaxes.append({'domain': y_domains[i], 'range':[-.5,1],
@@ -324,34 +311,27 @@ def location_values(hoverData):
         xaxes.append({'anchor':'y'+str(i+1), 'range':[-0.5,1.1],
                       'showgrid': False, 'showline': False, 'zeroline': False,
                       'ticks': 'inside', 'ticklen': 6,
-                      'ticktext':[0, int(max_values[i])], 'tickvals':[0, 1]
-                     })
+                      'ticktext':[0, int(max_values[i])], 'tickvals':[0, 1]})
 
-    loc_values = [s.iloc[0]['MeanAnnualPrecipitation'],
-                  s.iloc[0]['MeanAnnual Temperature'],
-                  s.iloc[0]['Elevation']]
+    loc_values = [local_data.iloc[0]['MeanAnnualPrecipitation'],
+                  local_data.iloc[0]['MeanAnnual Temperature'],
+                  local_data.iloc[0]['Elevation']]
     for i in range(len(loc_values)):
         traces.append(go.Scatter(
-                x=[loc_values[i]/max_values[i]], y=[0],
-                xaxis='x'+str(i+1), yaxis='y'+str(i+1),
-                mode='marker', marker={'size': 12, 'color': '#29ABD6'},
-                text=loc_values[i], hoverinfo='text', showlegend=False
+            x=[loc_values[i]/max_values[i]], y=[0],
+            xaxis='x'+str(i+1), yaxis='y'+str(i+1),
+            mode='marker', marker={'size': 12, 'color': '#29ABD6'},
+            text=loc_values[i], hoverinfo='text', showlegend=False
         ))
 
-    layout = {'shapes': shapes,
-              'title': 'Climate data in {}, {}'.format(
-                s.iloc[0]['City'].title().strip(),
-                s.iloc[0]['State']),
-              'xaxis1': xaxes[0],
-              'xaxis2': xaxes[1],
-              'xaxis3': xaxes[2],
-              'yaxis1': yaxes[0],
-              'yaxis2': yaxes[1],
-              'yaxis3': yaxes[2],
-              'autosize': True,
-              'margin': go.Margin(l=50, r=50, b=50, t=30),
-              'height': 200
-    }
+    city = local_data.iloc[0]['City'].title().strip()
+    state = local_data.iloc[0]['State']
+    plot_title = 'Climate data in {}, {}'.format(city, state)
+    layout = {'shapes': shapes, 'title': plot_title,
+              'xaxis1': xaxes[0], 'xaxis2': xaxes[1], 'xaxis3': xaxes[2],
+              'yaxis1': yaxes[0], 'yaxis2': yaxes[1], 'yaxis3': yaxes[2],
+              'autosize': True, 'margin': go.Margin(l=50, r=50, b=50, t=30),
+              'height': 200}
     return {'data': traces, 'layout': layout}
 
 @app.callback(
@@ -382,22 +362,23 @@ def update_map(community):
             'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
         }
     }
+
 @app.callback(
     dash.dependencies.Output('communities-dist', 'figure'),
     [dash.dependencies.Input('map', 'hoverData')])
 def update_plot(hoverData):
     '''Bar graph of community weights for selected location'''
-    s = df_loc_com[df_loc_com['ID'] == hoverData['points'][0]['customdata']]
+    local_data = df_loc_com[df_loc_com['ID'] == hoverData['points'][0]['customdata']]
     return {
         'data': [go.Bar(
             x=['Com. {}'.format(com+1) for com in range(20)],
-            y=[s.iloc[0]['Community {}'.format(com)] for com in range(20)]
+            y=[local_data.iloc[0]['Community {}'.format(com)] for com in range(20)]
         )],
         'layout': go.Layout(
             title='The distribution of communities in {}, {}'.format(
-                        s.iloc[0]['City'].title().strip(),
-                        s.iloc[0]['State']
-                    ),
+                local_data.iloc[0]['City'].title().strip(),
+                local_data.iloc[0]['State']
+            ),
             yaxis={
                 'title': 'Weight of each community',
                 'type': 'log',
