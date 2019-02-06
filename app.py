@@ -170,7 +170,7 @@ index_layout = html.Div([
             ], style={'margin': '0 50px 50px 50px'}),
             html.P('Hover over map to see details on the communities present at each location'),
             dcc.Graph(id='map', animate=True)
-        ],className='col-md-7'),
+        ], className='col-md-7'),
         html.Div([
             dcc.Graph(id='location-values', style={'margin': '0 0 0 0'}),
             dcc.Graph(id='communities-dist')
@@ -267,7 +267,7 @@ def generate_table(community):
             ])
             for i in range(len(taxa[community]))
         ])
-    ], className = 'table')
+    ], className='table')
 
 @app.callback(
     dash.dependencies.Output('location-values', 'figure'),
@@ -302,13 +302,13 @@ def location_values(hoverData):
     y_domains = [[0, .33], [.33, .67], [.67, 1]]
     yaxes = []
     for i in range(len(scales)):
-        yaxes.append({'domain': y_domains[i], 'range':[-.5,1],
+        yaxes.append({'domain': y_domains[i], 'range':[-.5, 1],
                       'showgrid': False, 'showline': False,
                       'zeroline': False, 'showticklabels': False})
 
     xaxes = []
     for i in range(len(scales)):
-        xaxes.append({'anchor':'y'+str(i+1), 'range':[-0.5,1.1],
+        xaxes.append({'anchor':'y'+str(i+1), 'range':[-0.5, 1.1],
                       'showgrid': False, 'showline': False, 'zeroline': False,
                       'ticks': 'inside', 'ticklen': 6,
                       'ticktext':[0, int(max_values[i])], 'tickvals':[0, 1]})
