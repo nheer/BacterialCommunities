@@ -80,7 +80,7 @@ model are true. Specifically, it can be calculated as the inverse geometric mean
 of the per-species likelihood. The smaller the perplexity, the more accurately
 the model predicts the observed data. I used the perplexity score to define the
 minimal number of communities required to describe the bacterial diversity in the
-dataset; the minimum is approximately 20 communities. (See slide show for graph).
+dataset; the minimum is approximately 20 communities.
 
 ### The bacterial communities are easily visualized
 #### Taxa
@@ -145,8 +145,7 @@ app.layout = html.Div([
                 html.Li([dcc.Link('Project Explanation', href='/explanation')]),
                 html.Li([dcc.Link('Location Explorer', href='/')]),
                 html.Li([dcc.Link('Climate Properties', href='/geoclimate')]),
-                html.Li([dcc.Link('Taxa Explorer', href='/taxa')]),
-                html.Li([html.A('Slides', href='https://docs.google.com/presentation/d/e/2PACX-1vTzvJQWZRATdPWl7HDEMyJuMKlDC0N7FMkiUxn31qLSaTGd3Vope0FdFP94cJns13K95nlNNXJPxwJn/pub?start=false&loop=false&delayms=3000')])
+                html.Li([dcc.Link('Taxa Explorer', href='/taxa')])
             ], className='nav navbar-nav')
         ], className='container-fluid')
     ], className='navbar navbar-dark navbar-inverse navbar-fixed-top'),
